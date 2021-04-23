@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: blue-pod-qa
+ namespace: qa-isolated
+ annotations: {
+    "opencontrail.org/network" : '{"domain":"default-domain", "project": "k8s-qa-isolated", "name":"k8s-blue-net-pod-network"}'
+  }
+spec:
+ containers:
+   - name: ubuntuapp
+     image: ubuntu-upstart

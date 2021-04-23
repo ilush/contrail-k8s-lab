@@ -1,0 +1,13 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+ name: orange-net
+ annotations: {
+   "opencontrail.org/cidr" : "50.50.50.0/24",
+   "opencontrail.org/ip_fabric_snat": "true"
+   }
+spec:
+ config: '{
+   "cniVersion": "0.3.1",
+   "type": "contrail-k8s-cni"
+}'
