@@ -1,0 +1,126 @@
+#csrx1-sc.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csrx1-sc
+  labels:
+    app: webapp-sc
+  annotations:
+   k8s.v1.cni.cncf.io/networks: '[
+       { "name": "vn-left" },
+       { "name": "vn-right" }
+   ]'
+spec:
+  containers:
+  - name: csrx1-sc
+    #image: hub.juniper.net/security/csrx:21.1R1
+    image: contrailk8sdayone/csrx
+    imagePullPolicy: IfNotPresent
+    env:
+    # https://www.juniper.net/documentation/us/en/software/csrx/csrx-linux-deployment/topics/concept/security-csrx-environment-variables.html
+    - name: CSRX_SIZE
+      value: "middle"
+    - name: CSRX_ROOT_PASSWORD
+      value: "lab123"
+    - name: CSRX_HUGEPAGES
+      value: "no"
+    - name: CSRX_PACKET_DRIVER
+      value: "interrupt"
+    - name: CSRX_AUTO_ASSIGN_IP
+      value: "yes"
+    - name: CSRX_MGMT_PORT_REORDER
+      value: "yes"
+    - name: CSRX_TCP_CKSUM_CALC
+      value: "yes"
+    - name: CSRX_LICENSE_FILE
+      value: "/var/jail/.csrx_license"
+    - name: CSRX_JUNOS_CONFIG
+      value: "/var/jail/csrx_config"
+    - name: CSRX_FORWARD_MODE
+      # value: "wire"
+      value: "routing"
+    ports:
+    - containerPort: 22
+    stdin: true
+    tty: true
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: config
+      mountPath: "/var/jail"
+    - name: disk
+      mountPath: "/dev"
+  volumes:
+  - name: config
+    configMap:
+      name: csrx-config-map
+      items:
+      - key: csrx_config
+        path: csrx_config
+      - key: csrx_license
+        path: .csrx_license
+  - name: disk
+    hostPath:
+      path: /dev
+      type: Directory
+  # imagePullSecrets:
+  # - name: secret-jnpr
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: csrx-config-map
+data:
+  csrx_license: |
+
+
+
+
+
+
+  csrx_config: |
+    interfaces {
+     ge-0/0/0 {
+        unit 0;
+     }
+     ge-0/0/1 {
+        unit 0;
+     }
+    }
+    security {
+        policies {
+            default-policy {
+                permit-all;
+            }
+        }
+        zones {
+            security-zone trust {
+                host-inbound-traffic {
+                    system-services {
+                        all;
+                    }
+                    protocols {
+                        all;
+                    }
+                }
+                interfaces {
+                    ge-0/0/0.0;
+                }
+            }
+            security-zone untrust {
+                host-inbound-traffic {
+                    system-services {
+                        all;
+                    }
+                    protocols {
+                        all;
+                    }
+                }
+                interfaces {
+                    ge-0/0/1.0;
+                }
+            }
+        }
+    }
+
