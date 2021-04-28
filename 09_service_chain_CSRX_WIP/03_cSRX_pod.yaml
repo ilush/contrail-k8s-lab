@@ -13,13 +13,20 @@ metadata:
 spec:
   containers:
   - name: csrx1-sc
-    #image: hub.juniper.net/security/csrx:21.1R1
-    image: contrailk8sdayone/csrx
+    #image: hub.juniper.net/security/csrx:19.2R1.8
+    image: csrx:21.1R1.11
+      # download from https://support.juniper.net/support/downloads/?p=csrx#sw
+    #image: contrailk8sdayone/csrx
+      # in this image DHCP doesn't seem to work
     imagePullPolicy: IfNotPresent
     env:
     # https://www.juniper.net/documentation/us/en/software/csrx/csrx-linux-deployment/topics/concept/security-csrx-environment-variables.html
     - name: CSRX_SIZE
-      value: "middle"
+      value: "large"
+      # value: "middle"
+      # value: "small"
+      # starting from junos 20.1 only large is supported, it takes 4GB RAM
+      # and 2 VCPU
     - name: CSRX_ROOT_PASSWORD
       value: "lab123"
     - name: CSRX_HUGEPAGES
@@ -28,8 +35,10 @@ spec:
       value: "interrupt"
     - name: CSRX_AUTO_ASSIGN_IP
       value: "yes"
-    - name: CSRX_MGMT_PORT_REORDER
-      value: "yes"
+    # - name: CSRX_MGMT_PORT_REORDER
+    #   value: "yes"
+    # mgmt port would be attached to namespaces default network, so no need
+    # to reorder
     - name: CSRX_TCP_CKSUM_CALC
       value: "yes"
     - name: CSRX_LICENSE_FILE

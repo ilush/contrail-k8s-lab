@@ -1,3 +1,4 @@
+---
 #left-ubuntu-sc.yaml
 apiVersion: v1
 kind: Pod
@@ -6,8 +7,7 @@ metadata:
   labels:
     app: webapp-sc
   annotations:
-    k8s.v1.cni.cncf.io/networks: '[
-      { "name": "vn-left" }]'
+    k8s.v1.cni.cncf.io/networks: '[{ "name": "vn-left" }]'
 spec:
   containers:
     - name: ubuntu-left-pod-sc
@@ -26,8 +26,7 @@ metadata:
   labels:
     app: webapp-sc
   annotations:
-    k8s.v1.cni.cncf.io/networks: '[
-      { "name": "vn-right" }]'
+    k8s.v1.cni.cncf.io/networks: '[{ "name": "vn-right" }]'
 spec:
   containers:
     - name: ubuntu-right-pod-sc
