@@ -19,7 +19,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: 'node-role.kubernetes.io/master'
+                  - key: "node-role.kubernetes.io/master"
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -29,15 +29,16 @@ spec:
           operator: Exists
           effect: NoSchedule
       hostNetwork: true
+
       initContainers:
         - name: contrail-node-init
-          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_TYPE
-              value: 'analytics-snmp'
+              value: "analytics-snmp"
             - name: CONTRAIL_STATUS_IMAGE
-              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+              value: "hub.juniper.net/contrail/contrail-status:2011.138"
           envFrom:
             - configMapRef:
                 name: env
@@ -50,9 +51,10 @@ spec:
               name: host-usr-bin
             - mountPath: /host/var/lib
               name: host-var-lib
+
       containers:
         - name: contrail-analytics-snmp-collector
-          image: 'hub.juniper.net/contrail/contrail-analytics-snmp-collector:2011.138'
+          image: "hub.juniper.net/contrail/contrail-analytics-snmp-collector:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -65,8 +67,9 @@ spec:
           env:
             - name: NODE_TYPE
               value: analytics-snmp
+
         - name: contrail-analytics-snmp-topology
-          image: 'hub.juniper.net/contrail/contrail-analytics-snmp-topology:2011.138'
+          image: "hub.juniper.net/contrail/contrail-analytics-snmp-topology:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -79,8 +82,9 @@ spec:
           env:
             - name: NODE_TYPE
               value: analytics-snmp
+
         - name: contrail-analytics-snmp-nodemgr
-          image: 'hub.juniper.net/contrail/contrail-nodemgr:2011.138'
+          image: "hub.juniper.net/contrail/contrail-nodemgr:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -99,8 +103,9 @@ spec:
               name: analytics-snmp-logs
             - mountPath: /mnt
               name: docker-unix-socket
+
         - name: contrail-analytics-snmp-provisioner
-          image: 'hub.juniper.net/contrail/contrail-provisioner:2011.138'
+          image: "hub.juniper.net/contrail/contrail-provisioner:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -119,6 +124,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: analytics-snmp-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

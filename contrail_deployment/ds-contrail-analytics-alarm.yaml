@@ -19,7 +19,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: 'node-role.kubernetes.io/master'
+                  - key: "node-role.kubernetes.io/master"
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -29,15 +29,16 @@ spec:
           operator: Exists
           effect: NoSchedule
       hostNetwork: true
+
       initContainers:
         - name: contrail-node-init
-          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_TYPE
-              value: 'analytics-alarm'
+              value: "analytics-alarm"
             - name: CONTRAIL_STATUS_IMAGE
-              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+              value: "hub.juniper.net/contrail/contrail-status:2011.138"
           envFrom:
             - configMapRef:
                 name: env
@@ -50,10 +51,11 @@ spec:
               name: host-usr-bin
             - mountPath: /host/var/lib
               name: host-var-lib
+
       containers:
         - name: kafka
-          image: 'hub.juniper.net/contrail/contrail-external-kafka:2011.138'
-          imagePullPolicy: 'IfNotPresent'
+          image: "hub.juniper.net/contrail/contrail-external-kafka:2011.138"
+          imagePullPolicy: "IfNotPresent"
           securityContext:
             privileged: true
           env:
@@ -66,8 +68,9 @@ spec:
                 name: env
             - configMapRef:
                 name: configzookeeperenv
+
         - name: contrail-analytics-alarm-gen
-          image: 'hub.juniper.net/contrail/contrail-analytics-alarm-gen:2011.138'
+          image: "hub.juniper.net/contrail/contrail-analytics-alarm-gen:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -82,8 +85,9 @@ spec:
           env:
             - name: NODE_TYPE
               value: analytics-alarm
+
         - name: contrail-analytics-alarm-nodemgr
-          image: 'hub.juniper.net/contrail/contrail-nodemgr:2011.138'
+          image: "hub.juniper.net/contrail/contrail-nodemgr:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -102,8 +106,9 @@ spec:
               name: analytics-alarm-logs
             - mountPath: /mnt
               name: docker-unix-socket
+
         - name: contrail-analytics-alarm-provisioner
-          image: 'hub.juniper.net/contrail/contrail-provisioner:2011.138'
+          image: "hub.juniper.net/contrail/contrail-provisioner:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -122,6 +127,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: analytics-alarm-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

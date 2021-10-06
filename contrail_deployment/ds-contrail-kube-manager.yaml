@@ -30,6 +30,7 @@ spec:
           effect: NoSchedule
       automountServiceAccountToken: false
       hostNetwork: true
+
       initContainers:
         - name: contrail-node-init
           image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
@@ -45,6 +46,7 @@ spec:
           volumeMounts:
             - mountPath: /host/usr/bin
               name: host-usr-bin
+
       containers:
         - name: contrail-kube-manager
           image: "hub.juniper.net/contrail/contrail-kubernetes-kube-manager:2011.138"
@@ -59,6 +61,7 @@ spec:
               name: kube-manager-logs
             - mountPath: /tmp/serviceaccount
               name: pod-secret
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

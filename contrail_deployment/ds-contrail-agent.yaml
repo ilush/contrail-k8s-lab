@@ -24,6 +24,7 @@ spec:
           effect: NoSchedule
       automountServiceAccountToken: false
       hostNetwork: true
+
       initContainers:
         - name: contrail-node-init
           image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
@@ -39,6 +40,7 @@ spec:
           volumeMounts:
             - mountPath: /host/usr/bin
               name: host-usr-bin
+
         - name: contrail-vrouter-kernel-init
           image: "hub.juniper.net/contrail/contrail-vrouter-kernel-build-init:2011.138"
           imagePullPolicy: IfNotPresent
@@ -56,6 +58,7 @@ spec:
               name: network-scripts
             - mountPath: /host/bin
               name: host-bin
+
         - name: contrail-kubernetes-cni-init
           image: "hub.juniper.net/contrail/contrail-kubernetes-cni-init:2011.138"
           imagePullPolicy: IfNotPresent
@@ -73,6 +76,7 @@ spec:
               name: var-log-contrail-cni
             - mountPath: /var/log/contrail
               name: agent-logs
+
       containers:
         - name: contrail-vrouter-agent
           image: "hub.juniper.net/contrail/contrail-vrouter-agent:2011.138"
@@ -109,6 +113,7 @@ spec:
               name: var-crashes
             - mountPath: /tmp/serviceaccount
               name: pod-secret
+
         - name: contrail-agent-nodemgr
           image: "hub.juniper.net/contrail/contrail-nodemgr:2011.138"
           imagePullPolicy: IfNotPresent
@@ -130,6 +135,7 @@ spec:
               name: agent-logs
             - mountPath: /mnt
               name: docker-unix-socket
+
         - name: contrail-agent-provisioner
           image: "hub.juniper.net/contrail/contrail-provisioner:2011.138"
           imagePullPolicy: IfNotPresent
@@ -146,6 +152,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: agent-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

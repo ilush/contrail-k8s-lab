@@ -30,6 +30,7 @@ spec:
           operator: Exists
           effect: NoSchedule
       hostNetwork: true
+
       containers:
         - name: rabbitmq
           image: "hub.juniper.net/contrail/contrail-external-rabbitmq:2011.138"
@@ -47,6 +48,7 @@ spec:
               name: rabbitmq-data
             - mountPath: /var/log/rabbitmq
               name: rabbitmq-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

@@ -20,7 +20,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: 'node-role.kubernetes.io/master'
+                  - key: "node-role.kubernetes.io/master"
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -30,9 +30,10 @@ spec:
           operator: Exists
           effect: NoSchedule
       hostNetwork: true
+
       containers:
         - name: config-zookeeper
-          image: 'hub.juniper.net/contrail/contrail-external-zookeeper:2011.138'
+          image: "hub.juniper.net/contrail/contrail-external-zookeeper:2011.138"
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_TYPE
@@ -47,6 +48,7 @@ spec:
               name: zookeeper-data
             - mountPath: /var/log/zookeeper
               name: zookeeper-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

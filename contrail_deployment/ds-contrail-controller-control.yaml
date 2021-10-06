@@ -19,7 +19,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: 'node-role.kubernetes.io/master'
+                  - key: "node-role.kubernetes.io/master"
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -31,22 +31,23 @@ spec:
       hostNetwork: true
       initContainers:
         - name: contrail-node-init
-          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
           env:
             - name: CONTRAIL_STATUS_IMAGE
-              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+              value: "hub.juniper.net/contrail/contrail-status:2011.138"
           envFrom:
             - configMapRef:
                 name: env
           volumeMounts:
             - mountPath: /host/usr/bin
               name: host-usr-bin
+
       containers:
         - name: contrail-controller-control
-          image: 'hub.juniper.net/contrail/contrail-controller-control-control:2011.138'
+          image: "hub.juniper.net/contrail/contrail-controller-control-control:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -54,8 +55,9 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: control-logs
+
         - name: contrail-controller-control-dns
-          image: 'hub.juniper.net/contrail/contrail-controller-control-dns:2011.138'
+          image: "hub.juniper.net/contrail/contrail-controller-control-dns:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -65,8 +67,9 @@ spec:
               name: dns-config
             - mountPath: /var/log/contrail
               name: control-logs
+
         - name: contrail-controller-control-named
-          image: 'hub.juniper.net/contrail/contrail-controller-control-named:2011.138'
+          image: "hub.juniper.net/contrail/contrail-controller-control-named:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -78,8 +81,9 @@ spec:
               name: dns-config
             - mountPath: /var/log/contrail
               name: control-logs
+
         - name: contrail-controller-nodemgr
-          image: 'hub.juniper.net/contrail/contrail-nodemgr:2011.138'
+          image: "hub.juniper.net/contrail/contrail-nodemgr:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -91,14 +95,14 @@ spec:
           env:
             - name: NODE_TYPE
               value: control
-
           volumeMounts:
             - mountPath: /var/log/contrail
               name: control-logs
             - mountPath: /mnt
               name: docker-unix-socket
+
         - name: contrail-controller-provisioner
-          image: 'hub.juniper.net/contrail/contrail-provisioner:2011.138'
+          image: "hub.juniper.net/contrail/contrail-provisioner:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -115,6 +119,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: control-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

@@ -1,0 +1,1 @@
+This is a copy of contrail_single.yaml from Ovidiu's repo, just split by resources.

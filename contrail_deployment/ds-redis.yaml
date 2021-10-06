@@ -19,33 +19,35 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: "node-role.kubernetes.io/master"
-                operator: Exists
+              - matchExpressions:
+                  - key: "node-role.kubernetes.io/master"
+                    operator: Exists
       tolerations:
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
-      - key: node.kubernetes.io/not-ready
-        operator: Exists
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoSchedule
       hostNetwork: true
+
       containers:
-      - name: redis
-        image: "redis:4.0.2"
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: env
-        volumeMounts:
-        - mountPath: /var/lib/redis
-          name: redis-data
-        - mountPath: /var/log/redis
-          name: redis-logs
+        - name: redis
+          image: "redis:4.0.2"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: env
+          volumeMounts:
+            - mountPath: /var/lib/redis
+              name: redis-data
+            - mountPath: /var/log/redis
+              name: redis-logs
+
       volumes:
-      - name: redis-data
-        hostPath:
-          path: /var/lib/contrail/redis
-      - name: redis-logs
-        hostPath:
-          path: /var/log/contrail/redis
+        - name: redis-data
+          hostPath:
+            path: /var/lib/contrail/redis
+        - name: redis-logs
+          hostPath:
+            path: /var/log/contrail/redis

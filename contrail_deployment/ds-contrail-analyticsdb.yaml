@@ -20,7 +20,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: 'node-role.kubernetes.io/master'
+                  - key: "node-role.kubernetes.io/master"
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -30,15 +30,16 @@ spec:
           operator: Exists
           effect: NoSchedule
       hostNetwork: true
+
       initContainers:
         - name: contrail-node-init
-          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_TYPE
-              value: 'database'
+              value: "database"
             - name: CONTRAIL_STATUS_IMAGE
-              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+              value: "hub.juniper.net/contrail/contrail-status:2011.138"
           envFrom:
             - configMapRef:
                 name: contrail-analyticsdb-config
@@ -49,9 +50,10 @@ spec:
               name: host-usr-bin
             - mountPath: /host/var/lib
               name: host-var-lib
+
       containers:
         - name: contrail-analyticsdb-nodemgr
-          image: 'hub.juniper.net/contrail/contrail-nodemgr:2011.138'
+          image: "hub.juniper.net/contrail/contrail-nodemgr:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -66,14 +68,15 @@ spec:
             - name: NODE_TYPE
               value: database
             - name: DATABASE_NODEMGR__DEFAULTS__minimum_diskGB
-              value: '2'
+              value: "2"
           volumeMounts:
             - mountPath: /var/log/contrail
               name: analyticsdb-logs
             - mountPath: /mnt
               name: docker-unix-socket
+
         - name: contrail-analyticsdb-provisioner
-          image: 'hub.juniper.net/contrail/contrail-provisioner:2011.138'
+          image: "hub.juniper.net/contrail/contrail-provisioner:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -90,12 +93,13 @@ spec:
             - name: NODE_TYPE
               value: database
             - name: DATABASE_NODEMGR__DEFAULTS__minimum_diskGB
-              value: '2'
+              value: "2"
           volumeMounts:
             - mountPath: /var/log/contrail
               name: analyticsdb-logs
+
         - name: contrail-analyticsdb
-          image: 'hub.juniper.net/contrail/contrail-external-cassandra:2011.138'
+          image: "hub.juniper.net/contrail/contrail-external-cassandra:2011.138"
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_TYPE
@@ -108,8 +112,9 @@ spec:
               name: analyticsdb-data
             - mountPath: /var/log/cassandra
               name: analyticsdb-logs
+
         - name: contrail-analytics-query-engine
-          image: 'hub.juniper.net/contrail/contrail-analytics-query-engine:2011.138'
+          image: "hub.juniper.net/contrail/contrail-analytics-query-engine:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -124,6 +129,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: analyticsdb-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:

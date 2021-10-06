@@ -19,7 +19,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: 'node-role.kubernetes.io/master'
+                  - key: "node-role.kubernetes.io/master"
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -29,24 +29,26 @@ spec:
           operator: Exists
           effect: NoSchedule
       hostNetwork: true
+
       initContainers:
         - name: contrail-node-init
-          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
           env:
             - name: CONTRAIL_STATUS_IMAGE
-              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+              value: "hub.juniper.net/contrail/contrail-status:2011.138"
           envFrom:
             - configMapRef:
                 name: env
           volumeMounts:
             - mountPath: /host/usr/bin
               name: host-usr-bin
+
       containers:
         - name: contrail-controller-webui-job
-          image: 'hub.juniper.net/contrail/contrail-controller-webui-job:2011.138'
+          image: "hub.juniper.net/contrail/contrail-controller-webui-job:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -54,8 +56,9 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: webui-logs
+
         - name: contrail-controller-webui-web
-          image: 'hub.juniper.net/contrail/contrail-controller-webui-web:2011.138'
+          image: "hub.juniper.net/contrail/contrail-controller-webui-web:2011.138"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -63,6 +66,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/contrail
               name: webui-logs
+
       imagePullSecrets:
         - name: contrail-registry
       volumes:
