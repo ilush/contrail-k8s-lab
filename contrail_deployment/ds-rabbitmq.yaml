@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: rabbitmq
+  namespace: kube-system
+  labels:
+    app: rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "node-role.kubernetes.io/master"
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoSchedule
+      hostNetwork: true
+      containers:
+        - name: rabbitmq
+          image: "hub.juniper.net/contrail/contrail-external-rabbitmq:2011.138"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_TYPE
+              value: config-database
+          envFrom:
+            - configMapRef:
+                name: env
+            - configMapRef:
+                name: rabbitmq-config
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq
+              name: rabbitmq-data
+            - mountPath: /var/log/rabbitmq
+              name: rabbitmq-logs
+      imagePullSecrets:
+        - name: contrail-registry
+      volumes:
+        - name: rabbitmq-data
+          hostPath:
+            path: /var/lib/contrail/rabbitmq
+        - name: rabbitmq-logs
+          hostPath:
+            path: /var/log/contrail/rabbitmq

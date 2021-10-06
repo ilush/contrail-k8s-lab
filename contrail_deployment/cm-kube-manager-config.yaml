@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-manager-config
+  namespace: kube-system
+data:
+  KUBERNETES_API_SERVER: 10.0.0.3
+  KUBERNETES_API_SECURE_PORT: '6443'
+  KUBERNETES_IP_FABRIC_SNAT: 'true'
+  KUBERNETES_PUBLIC_FIP_POOL: "{'domain': 'default-domain', 'project': 'k8s-default', 'network': 'k8s-public', 'name': 'public-fip-pool'}"
+  K8S_TOKEN_FILE: '/tmp/serviceaccount/token'

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: contrail-controller-webui
+  namespace: kube-system
+  labels:
+    app: contrail-controller-webui
+spec:
+  selector:
+    matchLabels:
+      app: contrail-controller-webui
+  template:
+    metadata:
+      labels:
+        app: contrail-controller-webui
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'node-role.kubernetes.io/master'
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoSchedule
+      hostNetwork: true
+      initContainers:
+        - name: contrail-node-init
+          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          env:
+            - name: CONTRAIL_STATUS_IMAGE
+              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+          envFrom:
+            - configMapRef:
+                name: env
+          volumeMounts:
+            - mountPath: /host/usr/bin
+              name: host-usr-bin
+      containers:
+        - name: contrail-controller-webui-job
+          image: 'hub.juniper.net/contrail/contrail-controller-webui-job:2011.138'
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: env
+          volumeMounts:
+            - mountPath: /var/log/contrail
+              name: webui-logs
+        - name: contrail-controller-webui-web
+          image: 'hub.juniper.net/contrail/contrail-controller-webui-web:2011.138'
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: env
+          volumeMounts:
+            - mountPath: /var/log/contrail
+              name: webui-logs
+      imagePullSecrets:
+        - name: contrail-registry
+      volumes:
+        - name: webui-logs
+          hostPath:
+            path: /var/log/contrail/webui
+        - name: host-usr-bin
+          hostPath:
+            path: /usr/bin

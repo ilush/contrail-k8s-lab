@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configzookeeperenv
+  namespace: kube-system
+data:
+  ZOOKEEPER_NODES: 10.0.0.3
+  ZOOKEEPER_PORT: '2181'
+  ZOOKEEPER_PORTS: '2888:3888'

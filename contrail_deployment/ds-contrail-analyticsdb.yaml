@@ -1,0 +1,144 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: contrail-analyticsdb
+  namespace: kube-system
+  labels:
+    app: contrail-analyticsdb
+spec:
+  selector:
+    matchLabels:
+      app: contrail-analyticsdb
+  template:
+    metadata:
+      labels:
+        app: contrail-analyticsdb
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'node-role.kubernetes.io/master'
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoSchedule
+      hostNetwork: true
+      initContainers:
+        - name: contrail-node-init
+          image: 'hub.juniper.net/contrail/contrail-node-init:2011.138'
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_TYPE
+              value: 'database'
+            - name: CONTRAIL_STATUS_IMAGE
+              value: 'hub.juniper.net/contrail/contrail-status:2011.138'
+          envFrom:
+            - configMapRef:
+                name: contrail-analyticsdb-config
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /host/usr/bin
+              name: host-usr-bin
+            - mountPath: /host/var/lib
+              name: host-var-lib
+      containers:
+        - name: contrail-analyticsdb-nodemgr
+          image: 'hub.juniper.net/contrail/contrail-nodemgr:2011.138'
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: env
+            - configMapRef:
+                name: nodemgr-config
+            - configMapRef:
+                name: contrail-analyticsdb-config
+          env:
+            - name: NODE_TYPE
+              value: database
+            - name: DATABASE_NODEMGR__DEFAULTS__minimum_diskGB
+              value: '2'
+          volumeMounts:
+            - mountPath: /var/log/contrail
+              name: analyticsdb-logs
+            - mountPath: /mnt
+              name: docker-unix-socket
+        - name: contrail-analyticsdb-provisioner
+          image: 'hub.juniper.net/contrail/contrail-provisioner:2011.138'
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: env
+            - configMapRef:
+                name: defaults-env
+            - configMapRef:
+                name: nodemgr-config
+            - configMapRef:
+                name: contrail-analyticsdb-config
+          env:
+            - name: NODE_TYPE
+              value: database
+            - name: DATABASE_NODEMGR__DEFAULTS__minimum_diskGB
+              value: '2'
+          volumeMounts:
+            - mountPath: /var/log/contrail
+              name: analyticsdb-logs
+        - name: contrail-analyticsdb
+          image: 'hub.juniper.net/contrail/contrail-external-cassandra:2011.138'
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_TYPE
+              value: database
+          envFrom:
+            - configMapRef:
+                name: contrail-analyticsdb-config
+          volumeMounts:
+            - mountPath: /var/lib/cassandra
+              name: analyticsdb-data
+            - mountPath: /var/log/cassandra
+              name: analyticsdb-logs
+        - name: contrail-analytics-query-engine
+          image: 'hub.juniper.net/contrail/contrail-analytics-query-engine:2011.138'
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          env:
+            - name: NODE_TYPE
+              value: database
+          envFrom:
+            - configMapRef:
+                name: env
+            - configMapRef:
+                name: configzookeeperenv
+          volumeMounts:
+            - mountPath: /var/log/contrail
+              name: analyticsdb-logs
+      imagePullSecrets:
+        - name: contrail-registry
+      volumes:
+        - name: analyticsdb-data
+          hostPath:
+            path: /var/lib/contrail/analyticsdb
+        - name: analyticsdb-logs
+          hostPath:
+            path: /var/log/contrail/analyticsdb
+        - name: docker-unix-socket
+          hostPath:
+            path: /var/run
+        - name: host-usr-bin
+          hostPath:
+            path: /usr/bin
+        - name: host-var-lib
+          hostPath:
+            path: /var/lib

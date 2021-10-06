@@ -8,4 +8,5 @@ spec:
   containers:
     - name: ubuntuapp
       image: ubuntu-upstart
-      command: ["/bin/bash","-c","while true; do sleep 10;done"]
+      command: ["/bin/bash"]
+      args: ["-c", "while true; do sleep 10;done"]

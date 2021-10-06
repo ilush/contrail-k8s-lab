@@ -13,7 +13,7 @@ spec:
         app: web-app-dev
     spec:
       containers:
-      - name: web-app-dev
-        image: savvythru/web-app-dev
-        ports:
-        - containerPort: 80
+        - name: web-app-dev
+          image: savvythru/web-app-dev
+          ports:
+            - containerPort: 80

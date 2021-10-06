@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: contrail-kube-manager
+  namespace: kube-system
+  labels:
+    app: contrail-kube-manager
+spec:
+  selector:
+    matchLabels:
+      app: contrail-kube-manager
+  template:
+    metadata:
+      labels:
+        app: contrail-kube-manager
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "node-role.kubernetes.io/master"
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoSchedule
+      automountServiceAccountToken: false
+      hostNetwork: true
+      initContainers:
+        - name: contrail-node-init
+          image: "hub.juniper.net/contrail/contrail-node-init:2011.138"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          env:
+            - name: CONTRAIL_STATUS_IMAGE
+              value: "hub.juniper.net/contrail/contrail-status:2011.138"
+          envFrom:
+            - configMapRef:
+                name: env
+          volumeMounts:
+            - mountPath: /host/usr/bin
+              name: host-usr-bin
+      containers:
+        - name: contrail-kube-manager
+          image: "hub.juniper.net/contrail/contrail-kubernetes-kube-manager:2011.138"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: env
+            - configMapRef:
+                name: kube-manager-config
+          volumeMounts:
+            - mountPath: /var/log/contrail
+              name: kube-manager-logs
+            - mountPath: /tmp/serviceaccount
+              name: pod-secret
+      imagePullSecrets:
+        - name: contrail-registry
+      volumes:
+        - name: kube-manager-logs
+          hostPath:
+            path: /var/log/contrail/kube-manager
+        - name: pod-secret
+          secret:
+            secretName: contrail-kube-manager-token
+        - name: host-usr-bin
+          hostPath:
+            path: /usr/bin
